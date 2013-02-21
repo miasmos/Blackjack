@@ -1,0 +1,22 @@
+<blackjack>
+  <leaderboard>
+    <entry place="1" name="Stephen" score="1201"/>
+    <score>1200</score>
+  </leaderboard>
+  <settings>
+    <music>1</music>
+  </settings>
+  <guest>
+    <chips>1200</chips>
+    <chipswon>200</chipswon>
+    <chipslost>1500</chipslost>
+    <hands>13</hands>
+    <handswon>6</handswon>
+    <handslost>7</handslost>
+    <winpercentage/>
+  </guest>
+  <sources>
+    <image name="backer" url="embed/backer.png"/>
+    <image name="big" url="embed/big.jpg"/>
+  </sources>
+</blackjack>
