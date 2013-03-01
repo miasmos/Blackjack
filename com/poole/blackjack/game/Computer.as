@@ -3,9 +3,9 @@
 	import flash.events.*;
 	
 	public class Computer extends Player {
-		public function Computer(deckRef,id:String="Computer") {
+		public function Computer(gameRef=null,deckRef=null) {
 			deck=deckRef;
-			playerID=id;
+			game=gameRef;
 		}
 		
 		public function Play() {
@@ -32,6 +32,17 @@
 			else {
 				return 1;
 			}
+		}
+		
+		override public function Reset() {
+			this.y=50;
+			total = 0;
+			aceCount = 0;
+			
+			for each (var index in cards) {
+				removeChild(index);
+			}
+			cards = new Array();
 		}
 	}
 }

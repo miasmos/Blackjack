@@ -12,9 +12,12 @@
 		var played:Array = new Array();
 		var bmp:Array = new Array();
 		var game;
+		var cardSize:Number;
+		var tempCard:Card;
 		
-		public function Deck(gameRef) {
+		public function Deck(gameRef,size:Number=1) {
 			game=gameRef;
+			cardSize=size;
 			var cards:Bitmap = new Bitmap(new Cards());
 			var x:uint=0,y:uint=0;
 			
@@ -35,6 +38,7 @@
 					}
 				}
 			}
+			tempCard = new Card(bmp[deck[0]],deck[0],true,true,size)
 			Shuffle();
 		}
 		
@@ -77,24 +81,24 @@
 			deck=temp;
 		}
 		
-		public function Draw(flipped:Boolean=true,allowMove:Boolean=false,size:Number=1,give:String=null) {
+		public function Draw(flipped:Boolean=true,allowMove:Boolean=false,give:String=null) {
 			if (deck.length == 0) {return 0;}
 			var card;
 			if (give != null) {
 				for (var index in deck) {
 					if (deck[index].charAt(0) == give) {
-						card = new Card(bmp[deck[index]],deck[index],flipped,allowMove,size);
+						card = new Card(bmp[deck[index]],deck[index],flipped,allowMove,cardSize);
 						deck.splice(index,1);
 						break;
 					}
 					if (index == deck.length-1) {
-						card = new Card(bmp[deck[0]],deck[0],flipped,allowMove,size);
+						card = new Card(bmp[deck[0]],deck[0],flipped,allowMove,cardSize);
 						deck.splice(0,1);
 					}
 				}
 			}
 			else {
-				card = new Card(bmp[deck[0]],deck[0],flipped,allowMove,size);
+				card = new Card(bmp[deck[0]],deck[0],flipped,allowMove,cardSize);
 				deck.splice(0,1);
 			}
 			
@@ -117,6 +121,10 @@
 			}
 			
 			return ret;*/
+		}
+		
+		public function CardProps() {
+			return tempCard.GetBmp();
 		}
 		
 		private function cropBitmap( _x:Number, _y:Number, _width:Number, _height:Number, displayObject:DisplayObject = null):Bitmap {
@@ -258,5 +266,9 @@ class Card extends MovieClip {
 		backRef.scaleY*=size;
 		bmpRef.scaleX*=size;
 		bmpRef.scaleY*=size;
+	}
+	
+	public function GetBmp() {
+		return bmpRef;
 	}
 }

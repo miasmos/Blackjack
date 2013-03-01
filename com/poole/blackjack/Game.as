@@ -5,9 +5,6 @@
 	import com.poole.blackjack.ui.Chip;
 	import com.poole.blackjack.ui.ChipUI;
 	import com.poole.blackjack.game.TouchEvents;
-	import com.greensock.*;
-	import com.greensock.easing.*;
-	import com.greensock.plugins.*;
 	import flash.display.*;
 	import flash.events.*;
 	import flash.text.TextField;
@@ -21,13 +18,10 @@
 		var player:Player;
 		var computer:Computer;
 		var chipUI:ChipUI;
+		var cardSize=1;	//size of cards, multiplicative ex. 2 = double size
 		//var touchRef = new TouchEvents(gestureZone);
 		
 		public function Game() {
-			deck = new Deck(this);
-			player = new Player(deck);
-			computer = new Computer(deck);
-			chipUI = new ChipUI(this,10450);
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
@@ -40,11 +34,17 @@
 			//touchRef.addEventListener(TouchSwipeRight.SWIPE_RIGHT, ENtoPL);
 			//touchRef.addEventListener(TouchSwipeLeft.SWIPE_LEFT, PLtoEN);
 			
+			deck = new Deck(this,cardSize);
+			player = new Player(this,deck);
+			computer = new Computer(this,deck);
+			chipUI = new ChipUI(this,10450);
+			
 			btnHit.addEventListener(MouseEvent.CLICK,Hit);
 			btnStay.addEventListener(MouseEvent.CLICK,Stay);
 			btnSurrender.addEventListener(MouseEvent.CLICK,Surrender);
 			btnDouble.addEventListener(MouseEvent.CLICK,Double);
-
+			addChild(player);
+			addChild(computer);
 			trace(deck.Peek());
 			newHand();
 			
@@ -62,11 +62,11 @@
 			deck.Reset();
 			clearTable();
 			
-			//deck.draw(*flipped, *moveable, *size, *give specific card)
+			//deck.draw(*flipped, *moveable, *give specific card)
 			player.Hit();
 			computer.Hit();
 			player.Hit();
-			computer.Hit(false,false,1,null);
+			computer.Hit(false,false,null);
 			trace("Player Total:"+player.GetTotal());
 			
 			

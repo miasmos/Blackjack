@@ -15,7 +15,7 @@
     <visible>true</visible>
     <fullScreen>false</fullScreen>
     <aspectRatio>portrait</aspectRatio>
-    <renderMode>gpu</renderMode>
+    <renderMode>auto</renderMode>
     <autoOrients>false</autoOrients></initialWindow>
   <icon/>
   <customUpdateUI>false</customUpdateUI>

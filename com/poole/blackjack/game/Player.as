@@ -1,7 +1,6 @@
 ﻿package com.poole.blackjack.game {
 	import flash.events.*;
 	import flash.display.MovieClip;
-	import com.poole.blackjack.Game;
 
 	public class Player extends MovieClip {
 		var cards:Array = new Array();
@@ -9,16 +8,17 @@
 		var playerID:String;
 		var aceCount:uint = 0;
 		var deck:Deck;
+		var game;
 		var chips:uint=10000;
 		var spaceBetweenCards:Number=50;
 		
-		public function Player(deckRef=null,id:String="Player") {
+		public function Player(gameRef=null,deckRef=null) {
 			deck=deckRef;
-			playerID=id;
+			game=gameRef;
 		}
 		
-		public function Hit(flipped:Boolean=true,allowMove:Boolean=false,size:Number=1,give:String=null) {
-			var card=deck.Draw(flipped,allowMove,size,give);
+		public function Hit(flipped:Boolean=true,allowMove:Boolean=false,give:String=null) {
+			var card=deck.Draw(flipped,allowMove,give);
 			card.SetOwner(playerID);
 			if (card.DisplayValue() == "A") {aceCount+=1;}
 			cards.push(card);
@@ -44,6 +44,7 @@
 		}
 		
 		public function Reset() {
+			this.y=game.uiZone.y-50-deck.CardProps().height;
 			total = 0;
 			aceCount = 0;
 			
@@ -80,12 +81,15 @@
 		private function centerObjects() {
 			var temp:Number=cards[0].width;
 			cards[0].x=0;
-			for (var i:uint=1; i <= cards.length; i++) {
-				cards[i]=cards[i-1]+spaceBetweenCards;
-				temp+=spaceBetweenCards;
+			if (cards.length > 1) {
+				for (var i:uint=1; i <= cards.length-1; i++) {
+					cards[i].x=cards[i-1].x+spaceBetweenCards;
+					temp+=spaceBetweenCards;
+				}
 			}
-			
-			this.x=stage.width/2-temp/2;
+
+			this.x=game.width/2-this.width/2;
+			trace(game.width/2+"-"+this.width/2+"="+(game.width/2-this.width/2)+","+this.x);
 		}
 	}
 }
