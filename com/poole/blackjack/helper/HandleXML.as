@@ -7,6 +7,8 @@
 	import flash.filesystem.*;
 	import flash.utils.setTimeout;
 	import flash.display.Loader;
+	import flash.media.SoundChannel;
+	import com.poole.blackjack.ImageControl;
 
 	/*	XML interface
 		opens a .void (encrypted) file with instantiation: HandleXML(callback object,url)
@@ -58,7 +60,7 @@
 						return sources[name][attr];
 					}
 					else {
-						trace("key is not definted");
+						trace("key is not defined");
 						return null;
 					}
 				}
@@ -140,7 +142,25 @@
 		
 		private function loadFile(node:XML) {	//set up files for loading
 			var theurl:URLRequest = new URLRequest(node.@url);
-			var ldr:Loader = new Loader();
+			
+			if (node.name() == "sound") {
+				var ldr:SoundChannel = new SoundChannel();
+			}
+			else {
+				var ldr:Loader = new Loader();
+			}
+			
+			/*in process of converting source array attributes to classes/methods*/
+			switch (node.name()) {
+				case "image":
+					sources[node.@name] = new ImageControl(node,ldr);
+					break;
+				case "sound":
+					sources[node.@name] = new AudioControl(node,ldr);
+					break;
+			}
+			sources[node.@name] = 
+			
 			sources[node.@name] = new Array(0,0);	//done loading, first call
 			sources[node.@name]["name"] = node.@name;
 			sources[node.@name]["type"] = node.name();
@@ -178,7 +198,7 @@
 			filestream.close();
 		}
 		
-		private function loadError(e:ErrorEvent,ref:String) {
+		private function loadError(e:ErrorEvent,ref) {
 			trace("Load error:"+e);
 			ref[2] = 1;
 		}

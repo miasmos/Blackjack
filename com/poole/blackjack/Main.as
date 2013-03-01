@@ -11,16 +11,16 @@
 		private var menu:MovieClip;
 		private var cState;	//state of app
 		//private var xmlLoader:HandleXML = new HandleXML(this,'embed/data.void');
-		/*private var xmlLoader:HandleXML = new HandleXML(this,'data',false);
+		private var xmlLoader:HandleXML = new HandleXML(this,'data',false);
 		private var xml:XML;
 		private var loadBar:MovieClip = new Loading();
-		private var container:MovieClip = new MovieClip();*/
+		private var container:MovieClip = new MovieClip();
 		
 		public function Main() {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
-			//addChild(loadBar);
-			//addChild(container);
-			//container.y=100;
+			addChild(loadBar);
+			addChild(container);
+			container.y=100;
 			changeState("game");
 		}
 		
@@ -28,7 +28,7 @@
 			addChild(object);
 		}
 		
-		/*public function XMLDone(xm) {
+		public function XMLDone(xm) {
 			xml = xm;
 			trace(xml);
 			xmlLoader.SetXML("music", "1");
@@ -60,7 +60,7 @@
 		public function updateLoadBar(loaded,total) {
 			loadBar.loadBar.width = (loaded/total)*loadBar.loadOutline.width;
 			loadBar.loadText.text = new uint(loaded/total*100).toString()+"%";
-		}*/
+		}
 		
 		public function removeFromStage(object) {
 			removeChild(object);
