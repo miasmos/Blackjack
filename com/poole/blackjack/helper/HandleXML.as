@@ -18,11 +18,6 @@
 			
 			returns xml data with GetXML(attribute)
 			sets xml data with SetXML(attribute,value)
-		
-		treats the children of any "<sources>" tag as files to be loaded, enumerates their sizes and loads them sequentially
-			returns file data with GetSource(name,attribute)
-			returns object reference with GetSource(name)
-			returns entire file array with GetSource()
 			
 			valid attributes are as follows: name, url, object, type
 			
@@ -52,30 +47,6 @@
 		/*public interface functions*/
 		public function Data() {
 			return xmlObject.data;
-		}
-		
-		public function GetSource(name:String=null,attr:String=null) {
-			if (name != null) {
-				if (attr != null) {
-					if (sources[name][attr] !== undefined) {
-						return sources[name][attr];
-					}
-					else {
-						trace("key is not defined");
-						return null;
-					}
-				}
-				else if (sources[name]["object"] !== undefined) {
-					return sources[name]["object"];
-				}
-				else {
-					trace("key is not defined");
-					return null;
-				}
-			}
-			else {
-				return sources;
-			}
 		}
 		
 		public function SetXML(attr:String, val:String) {
@@ -168,6 +139,7 @@
 			ref.GetObject().removeEventListener(ProgressEvent.PROGRESS,onProgress);
 			ref.SetLoaded(true);
 			notify.fileLoaded(ref);
+			notify.setSources(sources);
 		}
 		
 		private function onProgress(e:ProgressEvent,nodeName) {

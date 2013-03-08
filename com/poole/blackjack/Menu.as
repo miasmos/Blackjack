@@ -18,6 +18,9 @@
 			btnPlay.addEventListener(MouseEvent.CLICK, playClick);
 			btnPlay.addEventListener(MouseEvent.ROLL_OVER, over);
 			btnPlay.addEventListener(MouseEvent.ROLL_OUT, out);
+			btnSettings.addEventListener(MouseEvent.CLICK, settingsClick);
+			btnSettings.addEventListener(MouseEvent.ROLL_OVER, over);
+			btnSettings.addEventListener(MouseEvent.ROLL_OUT, out);
 			
 			main=MovieClip(this.parent);
 			TweenPlugin.activate([AutoAlphaPlugin]);
@@ -26,6 +29,10 @@
 		
 		private function playClick(e:MouseEvent) {
 			main.changeState("game");
+		}
+		
+		private function settingsClick(e:MouseEvent) {
+			main.changeState("settings");
 		}
 		
 		private function over(e:MouseEvent) {

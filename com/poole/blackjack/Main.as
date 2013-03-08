@@ -9,19 +9,21 @@
 		private var game:MovieClip;	//pass stage ref
 		private var intro:MovieClip;
 		private var menu:MovieClip;
+		private var settings:MovieClip;
 		private var cState;	//state of app
 		//private var xmlLoader:HandleXML = new HandleXML(this,'embed/data.void');
 		private var xmlLoader:HandleXML = new HandleXML(this,'data',false);
 		private var xml:XML;
 		private var loadBar:MovieClip = new Loading();
 		private var container:MovieClip = new MovieClip();
+		private var sources:Array;	//holds all imported files
 		
 		public function Main() {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			addChild(loadBar);
 			addChild(container);
 			container.y=100;
-			changeState("game");
+			changeState("menu");
 		}
 		
 		public function addToStage(object) {
@@ -45,7 +47,26 @@
 			if (xmlLoader.AllFilesLoaded()) {
 				//removeChild(loadBar);
 				trace("all files have finished loading");
-				trace(xmlLoader.GetSource("backer","url"));
+				trace(GetSource("backer").GetURL());
+			}
+		}
+		
+		public function setSources(arr) {
+			sources = arr;
+		}
+		
+		public function GetSource(name:String=null) {
+			if (name != null) {
+				if (sources[name] !== undefined) {
+					return sources[name];
+				}
+				else {
+					trace("key is not defined");
+					return null;
+				}
+			}
+			else {
+				return sources;
 			}
 		}
 		
@@ -66,7 +87,6 @@
 			removeChild(object);
 		}
 		
-		
 		public function changeState(stat:String) {
 			if (cState) {removeChild(cState);}
 			switch(stat) {
@@ -78,6 +98,9 @@
 					break;
 				case "game":
 					game = new Game();
+					break;
+				case "settings":
+					settings = new Settings(this);
 					break;
 			}
 			cState = this[stat];
