@@ -1,17 +1,18 @@
-﻿package com.poole.blackjack {
+﻿package com.poole.blackjack.helper {
 	import flash.media.Sound;
 	import flash.media.SoundChannel;
-	import flash.net.URLRequest;
-	import flash.filesystem.*;
+	import flash.media.SoundTransform;
+	import com.poole.blackjack.helper.SourceControl;
 	
-	public class AudioControl {
-		private var mySound:Sound = new Sound();
+	public class AudioControl extends SourceControl {
 		private var myChannel:SoundChannel = new SoundChannel();
 		private var lastPos:Number=0;
 		private var isPlay:Boolean=false;
+		private var mySound;
 		
-		public function AudioControl(obj) {
-			mySound = obj;
+		public function AudioControl(nod,obj) {
+			super(nod,obj);
+			mySound=obj;
 		}
 		
 		public function Play() {
@@ -33,7 +34,11 @@
 			isPlay=false;
 		}
 		
-		public function isPlaying() {
+		public function Volume() {
+			
+		}
+		
+		public function IsPlaying() {
 			return isPlay;
 		}
 	}

@@ -40,8 +40,8 @@
 		}
 		
 		public function fileLoaded(file) {
-			trace(file["type"]+":"+file["name"]+" done loading");
-			container.addChild(file["object"]);
+			trace(file.GetType()+":"+file.GetName()+" done loading");
+			if (file.GetType() != "sound") {container.addChild(file.GetObject())};
 			if (xmlLoader.AllFilesLoaded()) {
 				//removeChild(loadBar);
 				trace("all files have finished loading");
