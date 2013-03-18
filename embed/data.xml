@@ -17,8 +17,7 @@
   </guest>
   <sources>
     <image name="backer" url="embed/backer.png"/>
-    <image name="big" url="embed/big.jpg"/>
-    <sound name="music" url="embed/jazz.mp3"/>
-    <sound name="shuffle" url="embed/shuffle.wav"/>
+    <sound name="music" url="audio/jazz.mp3"/>
+    <sound name="roll" url="audio/roll.wav"/>
   </sources>
 </blackjack>
