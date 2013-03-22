@@ -19,6 +19,7 @@
 		var computer:Computer;
 		var chipUI:ChipUI;
 		var cardSize=1;	//size of cards, multiplicative ex. 2 = double size
+		var splitArr:Array = new Array();
 		//var touchRef = new TouchEvents(gestureZone);
 		
 		public function Game() {
@@ -36,13 +37,16 @@
 			
 			deck = new Deck(this,cardSize);
 			player = new Player(this,deck);
+			splitArr.push(player);
 			computer = new Computer(this,deck);
 			chipUI = new ChipUI(this,10450);
+			setChildIndex(chipUI,numChildren-1);
 			
 			btnHit.addEventListener(MouseEvent.CLICK,Hit);
 			btnStay.addEventListener(MouseEvent.CLICK,Stay);
 			btnSurrender.addEventListener(MouseEvent.CLICK,Surrender);
 			btnDouble.addEventListener(MouseEvent.CLICK,Double);
+			btnSplit.addEventListener(MouseEvent.CLICK,Split);
 			addChild(player);
 			addChild(computer);
 			trace(deck.Peek());
@@ -53,39 +57,50 @@
 		}
 		
 		function newHand() {
-			Toggle(btnSurrender,true);
-			Toggle(btnHit,true);
-			Toggle(btnStay,true);
-			Toggle(btnDouble,true);
-			player.Reset();
-			computer.Reset();
-			deck.Reset();
-			clearTable();
-			
+			Reset();
 			//deck.draw(*flipped, *moveable, *give specific card)
 			player.Hit();
 			computer.Hit();
 			player.Hit();
-			computer.Hit(false,false,null,false);
+			computer.Hit(false,false,null);
 			trace("Player Total:"+player.GetTotal());
-			
 			
 			if (player.GetTotal() == 21 && computer.GetTotal() < 21) {
 				trace("blackjack!");
 				newHand();
+				return;
 			}
 			else if (player.GetTotal() == 21 && computer.GetTotal() == 21) {
 				computer.FlipAll(true);
 				trace("Push!");
 				newHand();
+				return;
 			}
-			else if (computer.GetTotal() != 21) {
-				btnSurrender.visible = true;
+			
+			if (computer.GetTotal() != 21) {
+				Toggle(btnSurrender,true);
 			}
 			else if (computer.GetTotal() == 21) {
 				computer.FlipAll(true);
-				btnSurrender.visible = false;
+				Toggle(btnSurrender,false);
 			}
+			
+			if (player.CanSplit()) {Toggle(btnSplit,true);}
+		}
+		
+		private function Reset() {
+			Toggle(btnSurrender,true);
+			Toggle(btnHit,true);
+			Toggle(btnStay,true);
+			Toggle(btnDouble,true);
+			player = splitArr[0];
+			for (var i:uint = 0; i<splitArr.length; i++) {
+				splitArr[i].Reset();
+				if (i != 0) {removeChild(splitArr[i]); splitArr.pop();}
+			}
+			computer.Reset();
+			deck.Reset();
+			clearTable();
 		}
 		
 		private function centerObjects(obj:Array,space:uint=50) {
@@ -112,47 +127,73 @@
 			trace("Player Hits:"+player.GetTotal());
 			
 			if (player.Bust()) {
-				trace("Player Busts");
-				Toggle(btnHit,false);
-				Toggle(btnStay,false);
-				computer.FlipAll(true);
-				setTimeout(newHand,2000);
+				player.Done();
+				
+				if (SplitExists()) {
+					player = splitArr[enumHands()];
+				}
+				else {
+					Winner();
+				}
 			}
 		}
 		
-		function Stay(e:Event) {
+		private function SplitExists() {
+			return enumHands() > -1;
+		}
+		
+		private function Winner() {
 			Toggle(btnHit,false);
 			Toggle(btnStay,false);
 			Toggle(btnDouble,false);
-			trace("Player stays");
 			computer.FlipAll(true);
-			var tempCard=computer.GetLastPlayed();
-			var ret=computer.Play();
-
-			if (typeof(ret) == "object") {	//returned new cards
-				for each (var index in ret) {
-					index.x=tempCard.x+50;
-					index.y=tempCard.y;
-					tempCard=index;
-				}
-			}
 			
-			trace("\nPlayer: "+player.GetTotal()+" Dealer: "+computer.GetTotal());
-			if (computer.Bust()) {
-				trace("Player wins!");
-			}
-			else {
-				if (computer.GetTotal() > player.GetTotal()) {
-					trace("Dealer wins!");
-				}
-				else if (computer.GetTotal() == player.GetTotal()) {
-					trace("Push!");
+			for (var i:uint=0; i < splitArr.length; i++) {
+				trace("hand "+i);
+				if (!splitArr[i].Bust()) {
+					var tempCard=computer.GetLastPlayed();
+					var ret=computer.Play();
+		
+					if (typeof(ret) == "object") {	//returned new cards
+						for each (var index in ret) {
+							index.x=tempCard.x+50;
+							index.y=tempCard.y;
+							tempCard=index;
+						}
+					}
+					
+					trace("\nPlayer: "+player.GetTotal()+" Dealer: "+computer.GetTotal());
+					if (computer.Bust()) {
+						trace("Player wins!");
+					}
+					else {
+						if (computer.GetTotal() > player.GetTotal()) {
+							trace("Dealer wins!");
+						}
+						else if (computer.GetTotal() == player.GetTotal()) {
+							trace("Push!");
+						}
+						else {
+							trace("Player Wins!");
+						}
+					}
 				}
 				else {
-					trace("Player Wins!");
+					trace("Player Busts.");
 				}
 			}
 			setTimeout(newHand,2000);
+		}
+		
+		function Stay(e:Event) {
+			trace("Player stays");
+			player.Done();
+			if (!SplitExists()) {
+				Winner();
+			}
+			else {
+				player = splitArr[enumHands()];
+			}
 		}
 		
 		function Surrender(e:MouseEvent) {
@@ -171,6 +212,17 @@
 		
 		function Split(e:MouseEvent) {
 			//split pairs, each becoming a new hand
+			if (player.CanSplit()) {
+				var tmp = new Player(this,deck);
+				splitArr.push(tmp);
+				player.ChangeOwner("last",tmp);	//transfer last card to new player instance
+				addChild(tmp);
+				for (var i=0;i<splitArr.length;i++) {
+					splitArr[i].y = this.y;
+					splitArr[i].x = i*200;
+				}
+				player = tmp;
+			}
 		}
 		
 		function Toggle(object,stat) {
@@ -198,6 +250,14 @@
 		
 		function onTap(e:TouchEvent) {
 			Hit(null);
+		}
+		
+		private function enumHands() {
+			splitArr.reverse();
+			for (var i:uint=0;i<splitArr.length;i++) {
+				if (!splitArr[i].IsDone()) {trace("next hand at:"+(splitArr.length-i).toString()+",arr length:"+splitArr.length); splitArr.reverse(); return splitArr.length-1-i;}
+			}
+			return -1;
 		}
 	}
 }

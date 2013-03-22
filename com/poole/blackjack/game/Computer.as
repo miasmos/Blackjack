@@ -13,6 +13,7 @@
 			trace("Dealer Total:"+GetTotal());
 			for (var i:uint=0;i<=13;i++) {
 				if (total < 17 || total == 17 && aceCount > 0) {
+					if (!deck.CardsLeft()) {deck.Reset();}
 					Hit();
 					hitCards.push(GetLastPlayed());
 					trace("Dealer Hits:"+GetTotal());

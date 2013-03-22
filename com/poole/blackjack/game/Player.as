@@ -1,6 +1,8 @@
 ﻿package com.poole.blackjack.game {
 	import flash.events.*;
 	import flash.display.MovieClip;
+	import com.poole.blackjack.game.Player;
+	import com.poole.blackjack.game.Deck;
 
 	public class Player extends MovieClip {
 		var cards:Array = new Array();
@@ -12,6 +14,8 @@
 		var chips:uint=10000;
 		var spaceBetweenCards:Number=50;
 		var ind = new Indicator(true,0.5,"0");
+		var done:Boolean = false;	//tracks if the hand has been completed, important when split hands are being processed
+		var splitChild:Boolean = false;	//tracks if this player is being used as a split child
 		
 		public function Player(gameRef=null,deckRef=null) {
 			deck=deckRef;
@@ -20,23 +24,32 @@
 			ind.y = this.height/2-ind.height/2;
 		}
 		
-		public function Hit(flipped:Boolean=true,allowMove:Boolean=false,give:String=null,updateInd:Boolean=true) {
+		public function Hit(flipped:Boolean=true,allowMove:Boolean=false,give:String=null) {
 			var card=deck.Draw(flipped,allowMove,give);
 			card.SetOwner(playerID);
 			if (card.DisplayValue() == "A") {aceCount+=1;}
 			cards.push(card);
-			total+=card.NumericValue();
-			if (updateInd) {ind.Update(total.toString());}
 			if (aceCount>0 && total>21) {
 				total-=10;
 				aceCount-=1;
 			}
-			
+			total+=card.NumericValue();
+			if (flipped) {ind.Update(total.toString());}
 			centerObjects();
 			this.addChild(card);
 			ind.x = GetLastPlayed().x+GetLastPlayed().width-(ind.width/2);
 			ind.y = this.height/2-ind.height/2;
 			setChildIndex(ind,this.numChildren-1);
+		}
+		
+		public function ChangeOwner(inp:String,tmp) {
+			if (inp == "last") {
+				tmp.Give(GetLastPlayed());	//transfer split card from original player to new player
+				total -= GetLastPlayed().NumericValue();
+				ind.Update(total);
+				RemoveLast();
+				centerObjects();
+			}
 		}
 		
 		public function FlipAll(stat:Boolean=true) {
@@ -61,6 +74,10 @@
 			cards = new Array();
 		}
 		
+		public function CanSplit() {
+			return true;//cards.length == 2 && cards[0].NumericValue() == cards[1].NumericValue();
+		}
+		
 		public function GetCards() {
 			return cards;
 		}
@@ -75,6 +92,30 @@
 		
 		public function GetName() {
 			return playerID;
+		}
+		
+		public function Give(card,flipped:Boolean=true,allowMove:Boolean=false) {
+			card.SetOwner(playerID);
+			if (card.DisplayValue() == "A") {aceCount+=1;}
+			cards.push(card);
+			if (aceCount>0 && total>21) {
+				total-=10;
+				aceCount-=1;
+			}
+			total+=card.NumericValue();
+			if (flipped != card.Flipped()) {card.Flip(flipped);}
+			if (allowMove != card.Moveable()) {card.toggleMove(true);}
+			if (flipped) {ind.Update(total.toString());}
+			//centerObjects();
+			this.addChild(card);
+			ind.x = GetLastPlayed().x+GetLastPlayed().width-(ind.width/2);
+			ind.y = this.height/2-ind.height/2;
+			setChildIndex(ind,this.numChildren-1);
+		}
+		
+		public function RemoveLast() {
+			//removeChild(GetLastPlayed());
+			cards.pop();
 		}
 		
 		public function GetChips() {
@@ -96,7 +137,22 @@
 			}
 
 			this.x=stage.stageWidth/2-(cards[0].width+(spaceBetweenCards*(cards.length-1)))/2;
-			trace(this.x);
+		}
+		
+		public function IsDone() {
+			return done;
+		}
+		
+		public function Done() {
+			done = true;
+		}
+		
+		public function IsChild() {
+			return splitChild;
+		}
+		
+		public function Child() {
+			splitChild = true;
 		}
 	}
 }
