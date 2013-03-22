@@ -66,7 +66,7 @@
 			player.Hit();
 			computer.Hit();
 			player.Hit();
-			computer.Hit(false,false,null);
+			computer.Hit(false,false,null,false);
 			trace("Player Total:"+player.GetTotal());
 			
 			

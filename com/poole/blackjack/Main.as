@@ -21,13 +21,13 @@
 		//private var xmlLoader:HandleXML = new HandleXML(this,'embed/data.void');
 		private var xmlLoader:HandleXML = new HandleXML(this,'data',false);
 		private var xml:XML;
-		private var loadBar:MovieClip = new Loading();
+		//private var loadBar:MovieClip = new Loading();
 		private var container:MovieClip = new MovieClip();
 		private var sources:Array;	//holds all imported files
 		
 		public function Main() {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
-			addChild(loadBar);
+			//addChild(loadBar);
 			addChild(container);
 			container.y=100;
 			changeState("menu");
@@ -86,8 +86,8 @@
 		}
 		
 		public function updateLoadBar(loaded,total) {
-			loadBar.loadBar.width = (loaded/total)*loadBar.loadOutline.width;
-			loadBar.loadText.text = new uint(loaded/total*100).toString()+"%";
+			//loadBar.loadBar.width = (loaded/total)*loadBar.loadOutline.width;
+			//loadBar.loadText.text = new uint(loaded/total*100).toString()+"%";
 		}
 		
 		public function removeFromStage(object) {

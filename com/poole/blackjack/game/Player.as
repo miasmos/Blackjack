@@ -11,19 +11,22 @@
 		var game;
 		var chips:uint=10000;
 		var spaceBetweenCards:Number=50;
+		var ind = new Indicator(true,0.5,"0");
 		
 		public function Player(gameRef=null,deckRef=null) {
 			deck=deckRef;
 			game=gameRef;
+			addChild(ind);
+			ind.y = this.height/2-ind.height/2;
 		}
 		
-		public function Hit(flipped:Boolean=true,allowMove:Boolean=false,give:String=null) {
+		public function Hit(flipped:Boolean=true,allowMove:Boolean=false,give:String=null,updateInd:Boolean=true) {
 			var card=deck.Draw(flipped,allowMove,give);
 			card.SetOwner(playerID);
 			if (card.DisplayValue() == "A") {aceCount+=1;}
 			cards.push(card);
 			total+=card.NumericValue();
-			
+			if (updateInd) {ind.Update(total.toString());}
 			if (aceCount>0 && total>21) {
 				total-=10;
 				aceCount-=1;
@@ -31,11 +34,15 @@
 			
 			centerObjects();
 			this.addChild(card);
+			ind.x = GetLastPlayed().x+GetLastPlayed().width-(ind.width/2);
+			ind.y = this.height/2-ind.height/2;
+			setChildIndex(ind,this.numChildren-1);
 		}
 		
 		public function FlipAll(stat:Boolean=true) {
 			for each (var index in cards) {
 				index.Flip(stat);
+				if (stat) {ind.Update(total);}
 			}
 		}
 		
@@ -88,8 +95,8 @@
 				}
 			}
 
-			this.x=game.width/2-this.width/2;
-			trace(game.width/2+"-"+this.width/2+"="+(game.width/2-this.width/2)+","+this.x);
+			this.x=stage.stageWidth/2-(cards[0].width+(spaceBetweenCards*(cards.length-1)))/2;
+			trace(this.x);
 		}
 	}
 }
