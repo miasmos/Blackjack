@@ -58,8 +58,6 @@
 			addChild(player);
 			addChild(computer);
 			trace(deck.Peek());
-			chipTimer = new CircleTimer();
-			addChild(chipTimer);
 			newHand();
 			
 			//player.SetChips(1050);
@@ -68,6 +66,9 @@
 		
 		function newHand() {
 			Reset();
+			chipUI.Enable();
+			chipTimer = new CircleTimer();
+			addChild(chipTimer);
 			addEventListener(Event.ENTER_FRAME,checkBet);
 		}
 		
@@ -107,14 +108,24 @@
 		}
 		
 		function checkBet(e:Event) {
-			if (pot.GetChips() >= minBet) {
+			if (pot.GetChips() >= minBet && chipTimer.IsDone()) {
+				chipUI.Disable();
+				removeChild(chipTimer);
+				chipTimer = null;
 				EnableAllButtons();
 				removeEventListener(Event.ENTER_FRAME,checkBet);
 				continueHand();
 			}
+			else if (pot.GetChips() < minBet && chipTimer.IsDone()) {
+				
+			}
 			else {
 				DisableAllButtons();
 			}
+		}
+		
+		public function ResetTimer() {
+			chipTimer.Reset();
 		}
 		
 		private function Reset() {

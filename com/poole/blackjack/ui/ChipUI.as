@@ -50,6 +50,14 @@
 			pot.Reset();
 		}
 		
+		public function Disable() {
+			chipsClickable = false;
+		}
+		
+		public function Enable() {
+			chipsClickable = true;
+		}
+		
 		private function init(e:Event) {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
@@ -107,6 +115,7 @@
 				}});
 			}
 			else {	//add chip to pot
+				game.ResetTimer();
 				dragRef.parent.removeChild(dragRef);
 				pot.Add(dragRef);
 				//game.removeChild(dragRef);

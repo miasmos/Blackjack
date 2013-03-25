@@ -32,7 +32,7 @@
 		private var __paused:Boolean = false;
 		
 		/** Double this time is how long it will take for the circle to be drawn */
-		private var __rotationTime:int = 1.5;
+		private var __rotationTime:int = 2.5;
 		
 		/** Parameter that is used to know when to reset the __timeSpentPaused variable after a pause */
 		private var __iWasPaused:Boolean = false;
