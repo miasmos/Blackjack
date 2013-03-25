@@ -152,5 +152,9 @@
 		public function Reset() {
 			initCircle();
 		}
+		
+		public function HardReset() {
+			removeChild(__circle);
+		}
 	}
 }

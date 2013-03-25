@@ -11,7 +11,7 @@
 		var aceCount:uint = 0;
 		var deck:Deck;
 		var game;
-		var chips:uint=10000;
+		var chips;
 		var spaceBetweenCards:Number=50;
 		var ind = new Indicator(true,0.5,"0");
 		var done:Boolean = false;	//tracks if the hand has been completed, important when split hands are being processed
@@ -29,11 +29,11 @@
 			card.SetOwner(playerID);
 			if (card.DisplayValue() == "A") {aceCount+=1;}
 			cards.push(card);
+			total+=card.NumericValue();
 			if (aceCount>0 && total>21) {
 				total-=10;
 				aceCount-=1;
 			}
-			total+=card.NumericValue();
 			if (flipped) {ind.Update(total.toString());}
 			centerObjects();
 			this.addChild(card);
@@ -80,6 +80,10 @@
 		
 		public function GetCards() {
 			return cards;
+		}
+		
+		public function AllIn() {
+			return total = 0;
 		}
 		
 		public function GetTotal() {
