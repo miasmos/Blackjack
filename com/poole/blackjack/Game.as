@@ -5,6 +5,7 @@
 	import com.poole.blackjack.ui.Chip;
 	import com.poole.blackjack.ui.ChipUI;
 	import com.poole.blackjack.ui.Pot;
+	import com.poole.blackjack.ui.CircleTimer;
 	import com.poole.blackjack.game.TouchEvents;
 	import flash.display.*;
 	import flash.events.*;
@@ -20,6 +21,7 @@
 		var computer:Computer;
 		var chipUI:ChipUI;
 		var pot:Pot;
+		var chipTimer;
 		var cardSize=1;	//size of cards, multiplicative ex. 2 = double size
 		var minBet=20;	//minimum bet to play a hand
 		var startChips=100;	//number of chips player starts with
@@ -56,6 +58,8 @@
 			addChild(player);
 			addChild(computer);
 			trace(deck.Peek());
+			chipTimer = new CircleTimer();
+			addChild(chipTimer);
 			newHand();
 			
 			//player.SetChips(1050);
