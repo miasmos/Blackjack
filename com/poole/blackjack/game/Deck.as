@@ -50,6 +50,7 @@
 				}
 			}
 			Shuffle();
+			played = new Array();
 		}
 		
 		public function Peek(n:uint=0):Array {
@@ -136,10 +137,6 @@
 		
 		public function GetPlayed() {
 			return played;
-		}
-		
-		public function ClearPlayed() {
-			played = new Array();
 		}
 	}
 }

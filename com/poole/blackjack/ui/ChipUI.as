@@ -22,10 +22,10 @@
 		private var moveTime=0.7;	//time to move in animations
 		private var chipsClickable:Boolean = true;	//determines whether or not the chips are clickable
 	
-		public function ChipUI(g,initialChips:uint) {
+		public function ChipUI(g,p,initialChips:uint) {
 			game=g;
 			playerChips=initialChips;
-			pot = new Pot(game,this);
+			pot = p
 			game.addChild(this);
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}

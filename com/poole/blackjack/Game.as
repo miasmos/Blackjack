@@ -4,6 +4,7 @@
 	import com.poole.blackjack.game.Computer;
 	import com.poole.blackjack.ui.Chip;
 	import com.poole.blackjack.ui.ChipUI;
+	import com.poole.blackjack.ui.Pot;
 	import com.poole.blackjack.game.TouchEvents;
 	import flash.display.*;
 	import flash.events.*;
@@ -18,7 +19,10 @@
 		var player:Player;
 		var computer:Computer;
 		var chipUI:ChipUI;
+		var pot:Pot;
 		var cardSize=1;	//size of cards, multiplicative ex. 2 = double size
+		var minBet=20;	//minimum bet to play a hand
+		var startChips=100;	//number of chips player starts with
 		var splitArr:Array = new Array();
 		//var touchRef = new TouchEvents(gestureZone);
 		
@@ -39,7 +43,9 @@
 			player = new Player(this,deck);
 			splitArr.push(player);
 			computer = new Computer(this,deck);
-			chipUI = new ChipUI(this,10450);
+			pot = new Pot(this);
+			chipUI = new ChipUI(this,pot,startChips);
+			pot.SetChipUI(chipUI);
 			setChildIndex(chipUI,numChildren-1);
 			
 			btnHit.addEventListener(MouseEvent.CLICK,Hit);
@@ -58,29 +64,37 @@
 		
 		function newHand() {
 			Reset();
-			//deck.draw(*flipped, *moveable, *give specific card)
+			addEventListener(Event.ENTER_FRAME,checkBet);
+		}
+		
+		function continueHand() {
+			player.visible = true;
+			computer.visible = true;
 			player.Hit();
 			computer.Hit();
 			player.Hit();
+			//deck.draw(*flipped, *moveable, *give specific card)
 			computer.Hit(false,false,null);
 			trace("Player Total:"+player.GetTotal());
 			
 			if (player.GetTotal() == 21 && computer.GetTotal() < 21) {
 				trace("blackjack!");
-				newHand();
+				pot.Award(pot.GetChips()*2);
+				setTimeout(newHand,2000);
 				return;
 			}
 			else if (player.GetTotal() == 21 && computer.GetTotal() == 21) {
 				computer.FlipAll(true);
 				trace("Push!");
-				newHand();
+				pot.Award(pot.GetChips());
+				setTimeout(newHand,2000);
 				return;
 			}
 			
 			if (computer.GetTotal() != 21) {
 				Toggle(btnSurrender,true);
 			}
-			else if (computer.GetTotal() == 21) {
+			else {
 				computer.FlipAll(true);
 				Toggle(btnSurrender,false);
 			}
@@ -88,11 +102,18 @@
 			if (player.CanSplit()) {Toggle(btnSplit,true);}
 		}
 		
+		function checkBet(e:Event) {
+			if (pot.GetChips() >= minBet) {
+				EnableAllButtons();
+				removeEventListener(Event.ENTER_FRAME,checkBet);
+				continueHand();
+			}
+			else {
+				DisableAllButtons();
+			}
+		}
+		
 		private function Reset() {
-			Toggle(btnSurrender,true);
-			Toggle(btnHit,true);
-			Toggle(btnStay,true);
-			Toggle(btnDouble,true);
 			player = splitArr[0];
 			for (var i:uint = 0; i<splitArr.length; i++) {
 				splitArr[i].Reset();
@@ -100,7 +121,22 @@
 			}
 			computer.Reset();
 			deck.Reset();
-			clearTable();
+			player.visible = false;
+			computer.visible = false;
+		}
+		
+		private function EnableAllButtons() {
+			Toggle(btnSurrender,true);
+			Toggle(btnHit,true);
+			Toggle(btnStay,true);
+			Toggle(btnDouble,true);
+		}
+		
+		private function DisableAllButtons() {
+			Toggle(btnSurrender,false);
+			Toggle(btnHit,false);
+			Toggle(btnStay,false);
+			Toggle(btnDouble,false);
 		}
 		
 		private function centerObjects(obj:Array,space:uint=50) {
@@ -165,21 +201,26 @@
 					trace("\nPlayer: "+player.GetTotal()+" Dealer: "+computer.GetTotal());
 					if (computer.Bust()) {
 						trace("Player wins!");
+						pot.Award(pot.GetChips()*2);
 					}
 					else {
 						if (computer.GetTotal() > player.GetTotal()) {
 							trace("Dealer wins!");
+							pot.Award(0);
 						}
 						else if (computer.GetTotal() == player.GetTotal()) {
 							trace("Push!");
+							pot.Award(pot.GetChips());
 						}
 						else {
 							trace("Player Wins!");
+							pot.Award(pot.GetChips()*2);
 						}
 					}
 				}
 				else {
 					trace("Player Busts.");
+					pot.Award(0);
 				}
 			}
 			setTimeout(newHand,2000);
@@ -198,6 +239,7 @@
 		
 		function Surrender(e:MouseEvent) {
 			//surrender the hand, refund half the original bet
+			pot.Award(pot.GetChips()/2);
 			setTimeout(newHand,2000);
 		}
 		
@@ -229,13 +271,6 @@
 			object.mouseEnabled = stat;
 			//object.mouseChildren = stat;
 			object.enabled = stat;
-		}
-		
-		function clearTable() {
-			/*for each (var index in deck.GetPlayed()) {
-				removeChild(index);
-			}*/
-			deck.ClearPlayed();
 		}
 
 		/*touch/gesture functions*/

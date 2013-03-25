@@ -15,16 +15,10 @@
 		private var nextX:uint;		//set expected X of last added chip, used for animation of a chip if the last hasn't finished animating yet
 		private var chipVals:Array = new Array();	//stores sorted chip refs
 		
-		public function Pot(gam,ui) {
+		public function Pot(gam) {
 			game = gam;
-			chipUI = ui;
 			game.addChildAt(this,game.numChildren);
-			
-			chipVals[1000] = new Array();
-			chipVals[500] = new Array();
-			chipVals[100] = new Array();
-			chipVals[25] = new Array();
-			chipVals[10] = new Array();
+			Reset();
 		}
 		
 		public function Add(chip:Chip) {
@@ -78,25 +72,30 @@
 		}
 		
 		public function Award(num:uint) {	//animates highest denomination chips from pot for award, returns remainder to be awarded if not enough chips
+			var rem:int = num-total;
 			if (num > total) {num = total;}
 			var denom:Array = [1000,500,100,25,10];
 			var animate:Array = new Array();
+			var animate1:Array = new Array();
 			var track:uint = num;
 			
 			for each (var key in denom) {
-				if (key == 25 && num%10 == 0) {continue;}	//skip 25 if num is already even
-				while (num >= key && chipVals[key].length > 0) { 
-					animate.push(chips[chipVals[key][chipVals[key].length-1]]);
+				//if (key == 25 && num%10 == 0) {continue;}	//skip 25 if num is already even
+				while (chipVals[key].length > 0) { 
+					if (num >= key && !(key == 25 && num%10 == 0)) { //build player award array
+						animate.push(chips[chipVals[key][chipVals[key].length-1]]);
+						num -= key;
+					}
+					else if (num < key || (key == 25 && num%10 == 0)) {animate1.push(chips[chipVals[key][chipVals[key].length-1]]);}	//build house award array
 					chipVals[key].pop();
-					num -= key;
 				}
-				if (num == 0) {break;}
+				//if (num <= 0) {break;}
 			}
 			
 			var temp:Chip;
 			var delay:Number=0;
 				
-			for(key in animate) {
+			for(key in animate) {	//animate player chips
 				temp = animate[key].GetOrigin();
 				/*if (key > 0) {
 					if (animate[key].GetVal() != animate[key-1].GetVal()) {delay=0;}	//reset delay for each chip value
@@ -104,7 +103,7 @@
 				
 				chipUI.AddToChips(animate[key].GetVal());
 
-				TweenMax.to(animate[key],moveTime,{
+				TweenMax.to(animate[key],moveTime,{	//animate chips awarded to player
 							delay:delay,
 							x:chipUI.x+temp.x-this.x,
 							y:chipUI.y+temp.y-this.y,
@@ -116,9 +115,38 @@
 				});
 				delay+=0.08;
 			}
+			
+			//delay=0;
+			for(key in animate1) {	//animate house chips
+				temp = animate1[key].GetOrigin();
+				/*if (key > 0) {
+					if (animate[key].GetVal() != animate[key-1].GetVal()) {delay=0;}	//reset delay for each chip value
+				}*/
+
+				TweenMax.to(animate1[key],moveTime,{	//animate chips awarded to player
+							delay:delay,
+							x:this.width/2,
+							y:this.y-stage.stageHeight,
+							roundProps:["x","y"],
+							onComplete:function(chipRef) {
+								chipRef.parent.removeChild(chipRef);
+							},
+							onCompleteParams:[animate1[key]]
+				});
+				delay+=0.08;
+			}
 
 			trace("Chips left: "+chipUI.GetChips());
-			return num;
+			Reset();
+			if (rem > 0) {chipUI.AddToChips(rem);}
+		}
+		
+		public function GetChips() {
+			return total;
+		}
+		
+		public function SetChipUI(ui) {
+			chipUI =ui;
 		}
 	}
 }
