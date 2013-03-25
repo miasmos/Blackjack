@@ -6,12 +6,12 @@
 	import com.poole.blackjack.ui.ChipUI;
 	import com.poole.blackjack.ui.Pot;
 	import com.poole.blackjack.ui.CircleTimer;
-	import com.poole.blackjack.game.TouchEvents;
 	import flash.display.*;
 	import flash.events.*;
 	import flash.text.TextField;
 	import flash.utils.setTimeout;
 	import flash.text.TextFormat;
+	import com.poole.blackjack.game.TouchEvents;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	
@@ -24,22 +24,17 @@
 		var chipTimer;
 		var cardSize=1;	//size of cards, multiplicative ex. 2 = double size
 		var minBet=20;	//minimum bet to play a hand
-		var startChips=100;	//number of chips player starts with
+		var startChips=140;	//number of chips player starts with
 		var splitArr:Array = new Array();
-		//var touchRef = new TouchEvents(gestureZone);
+		var main;	//ref to main
 		
-		public function Game() {
+		public function Game(m) {
+			main = m;
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
 		function init(e:Event) {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
-			//TweenPlugin.activate([AutoAlphaPlugin, VisiblePlugin]);
-			
-			//touchRef.addEventListener(TouchEventTap.TAP, LangSelected);
-			//touchRef.addEventListener(TouchSwipeRight.SWIPE_RIGHT, ENtoPL);
-			//touchRef.addEventListener(TouchSwipeLeft.SWIPE_LEFT, PLtoEN);
 			
 			deck = new Deck(this,cardSize);
 			player = new Player(this,deck);
@@ -50,6 +45,11 @@
 			pot.SetChipUI(chipUI);
 			setChildIndex(chipUI,numChildren-1);
 			
+			//var touchRef = parent.GetTouchRef();
+			main.GetTouchRef().addEventListener("Tap", Hit);
+			main.GetTouchRef().addEventListener("SwipeLeft", Stay);
+			main.GetTouchRef().addEventListener("SwipeRight", Stay);
+			
 			btnHit.addEventListener(MouseEvent.CLICK,Hit);
 			btnStay.addEventListener(MouseEvent.CLICK,Stay);
 			btnSurrender.addEventListener(MouseEvent.CLICK,Surrender);
@@ -59,9 +59,6 @@
 			addChild(computer);
 			trace(deck.Peek());
 			newHand();
-			
-			//player.SetChips(1050);
-			//chipUI.SetChips(1050);
 		}
 		
 		function newHand() {
@@ -116,8 +113,8 @@
 				removeEventListener(Event.ENTER_FRAME,checkBet);
 				continueHand();
 			}
-			else if (pot.GetChips() < minBet && chipTimer.IsDone()) {
-				
+			else if (pot.GetChips() < minBet && chipTimer.IsDone()) {	//bet minimum amount on timer end and no bets
+				chipUI.ManualAdd(minBet-pot.GetChips());
 			}
 			else {
 				DisableAllButtons();
@@ -199,20 +196,24 @@
 			Toggle(btnDouble,false);
 			computer.FlipAll(true);
 			
+			var tempCard=computer.GetLastPlayed();
+			var ret=computer.Play();
+
+			if (typeof(ret) == "object") {	//returned new cards
+				for each (var index in ret) {
+					index.x=tempCard.x+50;
+					index.y=tempCard.y;
+					tempCard=index;
+				}
+			}
+			
+			setTimeout(continueWinner,2000);
+		}
+		
+		private function continueWinner() {
 			for (var i:uint=0; i < splitArr.length; i++) {
 				trace("hand "+i);
 				if (!splitArr[i].Bust()) {
-					var tempCard=computer.GetLastPlayed();
-					var ret=computer.Play();
-		
-					if (typeof(ret) == "object") {	//returned new cards
-						for each (var index in ret) {
-							index.x=tempCard.x+50;
-							index.y=tempCard.y;
-							tempCard=index;
-						}
-					}
-					
 					trace("\nPlayer: "+player.GetTotal()+" Dealer: "+computer.GetTotal());
 					if (computer.Bust()) {
 						trace("Player wins!");
@@ -264,7 +265,9 @@
 			//Toggle(btnDouble,false);
 			//Hit(null);
 			//chipUI.SetChips(int(test.text));
+			
 			chipUI.Award(5045);
+			
 		}
 		
 		function Split(e:MouseEvent) {

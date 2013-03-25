@@ -4,7 +4,9 @@
 	import com.poole.blackjack.helper.HandleXML;
 	import flash.events.Event;
 	import flash.utils.ByteArray;
-	
+	import com.poole.blackjack.game.TouchEvents;
+	import flash.ui.Multitouch;
+	import flash.ui.MultitouchInputMode;
 	
 	//click the gear in the top right for audio things
 	//switches states to settings state
@@ -24,13 +26,19 @@
 		//private var loadBar:MovieClip = new Loading();
 		private var container:MovieClip = new MovieClip();
 		private var sources:Array;	//holds all imported files
+		private var touchRef = new TouchEvents(stage);
 		
 		public function Main() {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			//addChild(loadBar);
 			addChild(container);
 			container.y=100;
+			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 			changeState("menu");
+		}
+		
+		public function GetTouchRef() {
+			return touchRef;
 		}
 		
 		public function addToStage(object) {
@@ -104,7 +112,7 @@
 					menu = new Menu();
 					break;
 				case "game":
-					game = new Game();
+					game = new Game(this);
 					break;
 				case "settings":
 					settings = new Settings(this);

@@ -12,8 +12,6 @@
 		private var game;	//reference to parent object
 		private var playerChips:uint;	//number of chips the player has
 		private var pot:Pot;
-		
-		
 		private var dragRef;	//reference to the object spawned on drag
 		private var originRef;	//reference to the origin of the spawned object
 		private var fadingChips:TimelineLite;	//reference to fading animations
@@ -50,12 +48,44 @@
 			pot.Reset();
 		}
 		
+		public function ChipsLeft() {
+			return playerChips > 0;
+		}
+		
 		public function Disable() {
 			chipsClickable = false;
 		}
 		
 		public function Enable() {
 			chipsClickable = true;
+		}
+		
+		public function ManualAdd(amt:uint) {
+			var denom:Array = [1000,500,100,25,10];
+			var animate:Array = new Array();
+			for (var i:uint;i<denom.length;i++) {	//build animation array
+				if (denom[i] == 25 && playerChips%10 == 0) {continue;}
+				while (ChipsLeft() && amt>=denom[i] && playerChips>=denom[i]) {
+					//originRef = chips[];
+					animate.push(chips[chips.length-1-i]);
+					amt-=denom[i];
+					playerChips-=denom[i];
+				}
+			}
+			
+			var temp:Chip;
+			var delay:Number=0;
+			
+			for each (var key in animate) {		//animate the chips
+				temp = new Chip(key.GetVal(),false,1,key);
+				temp.x = this.x+key.x;
+				temp.y = this.y+key.y;
+				pot.Add(temp);
+				Toggle(getChipDisplay());
+				delay+=0.08;
+			}
+			
+			trace(animate);
 		}
 		
 		private function init(e:Event) {
