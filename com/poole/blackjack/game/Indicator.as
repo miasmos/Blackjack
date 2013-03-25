@@ -4,7 +4,8 @@
 	public class Indicator extends MovieClip {
 		public function Indicator(vis:Boolean=true,siz:Number=1,init:String="") {
 			if (init.length > 0) {Text.text = init;}
-			if (!vis) {Toggle();}
+			if (!vis) {Hide();}
+			else {Show();}
 			this.scaleX = siz;
 			this.scaleY = siz;
 		}
@@ -17,6 +18,18 @@
 			this.visible = !this.visible;
 			this.mouseEnabled = !this.mouseEnabled;
 			this.mouseChildren = !this.mouseChildren;
+		}
+		
+		public function Hide() {
+			this.visible = false;
+			this.mouseEnabled = false;
+			this.mouseChildren = false;
+		}
+		
+		public function Show() {
+			this.visible = true;
+			this.mouseEnabled = true;
+			this.mouseChildren = true;
 		}
 		
 		public function IsHidden() {

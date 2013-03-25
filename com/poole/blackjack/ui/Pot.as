@@ -1,6 +1,7 @@
 ﻿package com.poole.blackjack.ui {
 	import flash.display.MovieClip;
 	import com.poole.blackjack.ui.Chip;
+	import com.poole.blackjack.game.Indicator;
 	import com.greensock.*;
 	import com.greensock.easing.*;
 	import com.greensock.plugins.*;
@@ -10,6 +11,7 @@
 		private var total:uint = 0;
 		private var game;	//parent refs
 		private var chipUI;
+		private var ind = new Indicator(false,0.7,"0");
 		private var moveTime:Number=0.7;	//used in animation
 		private var chipSpace:uint=2;	//determines how far apart each chip is
 		private var nextX:uint;		//set expected X of last added chip, used for animation of a chip if the last hasn't finished animating yet
@@ -18,21 +20,23 @@
 		public function Pot(gam) {
 			game = gam;
 			game.addChildAt(this,game.numChildren);
+			addChild(ind);
+			ind.y = 17;
 			Reset();
 		}
 		
 		public function Add(chip:Chip) {
-			if ((chips.length)*(chip.width/chipSpace)+chip.width*2 > game.gestureZone.width) {
-				shiftChips()
-			}
-	
+			if ((chips.length)*(chip.width/chipSpace)+chip.width*2 > game.gestureZone.width) {shiftChips();}
 			if (chips.length < 1) {this.y=game.gestureZone.height/2-chip.height/2; this.x=game.gestureZone.width/2-chip.width/2}	//set initial y
 			chips.push(chip);
+			
 			chipVals[chip.GetVal()].push(chips.length-1);
 			chip.AllowMove(false);
 			total += chip.GetVal();
+			ind.Update(total.toString());
 			
 			this.addChild(chip);
+			setChildIndex(ind,numChildren-1);
 			chip.scaleX = 1/this.scaleX;
 			chip.y=chip.y-this.y;	//correct for new parent space
 			chip.x=chip.x-this.x;
@@ -46,6 +50,15 @@
 				nextX = chips.length*(chip.width/chipSpace);
 			}
 			TweenMax.to(this,moveTime,{x:game.gestureZone.width/2-((chip.width/chipSpace)*(chips.length+1))/2});
+			if (chips.length > 1) {
+				TweenMax.to(ind,moveTime,{	//animate chips awarded to player
+					delay:0,
+					x:((chips.length+1)*(chip.width/chipSpace))/2-ind.width/2,
+					roundProps:["x"]
+				});
+				if (ind.IsHidden()) {TweenMax.to(ind,moveTime,{autoAlpha:1});}
+			}
+			else if (chips.length <= 1 && !ind.IsHidden()) {TweenMax.to(ind,moveTime,{autoAlpha:0});}
 		}
 		
 		private function shiftChips() {
@@ -69,6 +82,8 @@
 			chipVals[10] = new Array();
 			total = 0;
 			chipSpace=2;
+			ind.Hide();
+			ind.Update("0");
 		}
 		
 		public function Award(num:uint) {	//animates highest denomination chips from pot for award, returns remainder to be awarded if not enough chips
@@ -143,6 +158,10 @@
 		
 		public function GetChips() {
 			return total;
+		}
+		
+		public function GetChipCount() {
+			return chips.length;
 		}
 		
 		public function SetChipUI(ui) {

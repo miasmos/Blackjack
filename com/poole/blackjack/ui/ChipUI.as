@@ -13,6 +13,7 @@
 		private var playerChips:uint;	//number of chips the player has
 		private var pot:Pot;
 		
+		
 		private var dragRef;	//reference to the object spawned on drag
 		private var originRef;	//reference to the origin of the spawned object
 		private var fadingChips:TimelineLite;	//reference to fading animations
