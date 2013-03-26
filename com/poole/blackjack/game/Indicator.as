@@ -14,6 +14,10 @@
 			Text.text = txt;
 		}
 		
+		public function GetText() {
+			return Text.text;
+		}
+		
 		public function Toggle() {
 			this.visible = !this.visible;
 			this.mouseEnabled = !this.mouseEnabled;

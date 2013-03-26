@@ -2,8 +2,10 @@
 	import flash.display.*;
 	import flash.utils.*;
 	import flash.events.*;
+	import com.poole.blackjack.game.IndicatorLong;
 	import com.greensock.*;
 	import com.greensock.easing.*;
+	import fl.transitions.easing.*;
 	import com.greensock.plugins.*;
 	import com.poole.blackjack.ui.Pot;
 	
@@ -20,16 +22,21 @@
 		private var fadeTime=0.3;	//time to fade in animations
 		private var moveTime=0.7;	//time to move in animations
 		private var chipsClickable:Boolean = true;	//determines whether or not the chips are clickable
+		private var ind = new IndicatorLong(true,0.5,"0");	//chip count indicator
 	
 		public function ChipUI(g,p,initialChips:uint) {
 			game=g;
 			playerChips=initialChips;
 			pot = p
 			game.addChild(this);
+			ind.Update(initialChips.toString());
+			ind.x = -70;
+			addChild(ind);
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
 		public function SetChips(amt:uint) {
+			ind.y = this.height/2-ind.height/2;
 			playerChips=amt;
 			Toggle(getChipDisplay());
 		}
@@ -99,10 +106,10 @@
 			}
 			
 			TweenPlugin.activate([AutoAlphaPlugin, VisiblePlugin]);
-
 			this.x = (game.uiZone.width/2)-(this.width/2);
 			this.y = game.uiZone.y+(game.uiZone.height/2)-(this.height/2);
 			Toggle(getChipDisplay(),true);	//spawn chipUI according to initial chip count
+			ind.y = this.height/2-ind.height/2;
 		}
 		
 		private function getChipDisplay() {	//return chips to be animated
@@ -124,7 +131,7 @@
 				game.addChild(dragRef);
 				dragRef.startDrag();
 				
-				playerChips -= originRef.GetVal();
+				ind.Update(playerChips.toString());
 				chipsClickable = false;
 				Toggle(getChipDisplay());
 				
@@ -134,7 +141,7 @@
 		
 		private function releaseCursor(e:MouseEvent){	//determine action based on chip position, chip back into pool or chip into pot
 			if (dragRef.y > game.uiZone.y-dragRef.height) {	//cancel use of chip
-				playerChips += originRef.GetVal();
+				ind.Update(playerChips.toString());
 				
 				fadingChips.reverse();	//timelinelite rocks
 				Toggle(getChipDisplay());
@@ -155,8 +162,18 @@
 			dragRef.stopDrag();
 			dragRef.removeEventListener(MouseEvent.MOUSE_UP,releaseCursor);
 		}
+		
+		private function countUp() {	//fancy easing for pot counter
+			var _obj:Object = {};	
+			_obj.newval = int(ind.GetText());
+			TweenMax.to(_obj, 3, {newval:playerChips,ease:Regular.easeOut,onUpdate:ind.Update(_obj.newval)});
+		}
 	
 		private function Toggle(anim:Array,instant:Boolean=false) {	//does all the animation
+			//ind.Update(playerChips.toString());
+			countUp();
+			if (playerChips <= 0) {ind.Hide();}
+			
 			fadingChips = new TimelineLite();
 			movingChips = new TimelineLite();
 			
