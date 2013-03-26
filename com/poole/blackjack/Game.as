@@ -24,7 +24,7 @@
 		private var chipTimer;
 		private var cardSize=1;	//size of cards, multiplicative ex. 2 = double size
 		private var minBet=20;	//minimum bet to play a hand
-		private var startChips=140;	//number of chips player starts with
+		private var startChips=20;	//number of chips player starts with
 		private var splitArr:Array = new Array();
 		private var main;	//ref to main
 		
@@ -137,9 +137,18 @@
 		
 		private function newHand() {
 			Reset();
-			chipUI.Enable();
-			addChild(chipTimer);
-			addEventListener(Event.ENTER_FRAME,checkBet);
+			if (chipUI.YouAreAFailure()) {
+				trace("YOU ARE A LOSER");
+				var broke = new Broke();
+				addChild(broke);
+				broke.x = stage.stageWidth/2-broke.width/2;
+				broke.y = stage.stageHeight/2-broke.height/2;
+			}
+			else {
+				chipUI.Enable();
+				addChild(chipTimer);
+				addEventListener(Event.ENTER_FRAME,checkBet);
+			}
 		}
 		
 		/*workhorse*/
@@ -198,12 +207,12 @@
 		}
 		
 		private function checkBet(e:Event) {
-			if ((pot.GetChips() < minBet && chipTimer.IsDone()) || chipUI.GetChips() < minBet) {	//bet minimum amount on timer end and no bets
+			if ((pot.GetChips() < minBet && chipTimer.IsDone())) {	//bet minimum amount on timer end and no bets
 				chipUI.ManualAdd(minBet-pot.GetChips());
 				removeEventListener(Event.ENTER_FRAME,checkBet);
 			}
 			
-			if (pot.GetChips() >= minBet && chipTimer.IsDone()) {
+			if ((pot.GetChips() >= minBet && chipTimer.IsDone()) || chipUI.GetChips() < minBet) {
 				chipUI.Disable();
 				EnableAllButtons();
 				removeEventListener(Event.ENTER_FRAME,checkBet);
@@ -262,7 +271,7 @@
 			deck.Reset();
 			player.visible = false;
 			computer.visible = false;
-			if (chipTimer == null) {chipTimer = new CircleTimer();}
+			if (chipTimer == null && !chipUI.YouAreAFailure()) {chipTimer = new CircleTimer();}
 		}
 		
 		/*helper functions*/

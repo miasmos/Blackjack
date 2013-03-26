@@ -55,6 +55,10 @@
 			pot.Reset();
 		}
 		
+		public function YouAreAFailure() {
+			return playerChips < 20;
+		}
+		
 		public function ChipsLeft() {
 			return playerChips > 0;
 		}
@@ -129,6 +133,7 @@
 				dragRef.x=this.x+originRef.x;
 				dragRef.y=this.y+originRef.y;
 				game.addChild(dragRef);
+				playerChips-=dragRef.GetVal();
 				dragRef.startDrag();
 				
 				ind.Update(playerChips.toString());
@@ -141,8 +146,8 @@
 		
 		private function releaseCursor(e:MouseEvent){	//determine action based on chip position, chip back into pool or chip into pot
 			if (dragRef.y > game.uiZone.y-dragRef.height) {	//cancel use of chip
-				ind.Update(playerChips.toString());
-				
+				//ind.Update(playerChips.toString());
+				playerChips+=dragRef.GetVal();
 				fadingChips.reverse();	//timelinelite rocks
 				Toggle(getChipDisplay());
 				
@@ -164,14 +169,20 @@
 		}
 		
 		private function countUp() {	//fancy easing for pot counter
+			//trace("player chips:"+playerChips+",last chips:"+ind.GetText());
 			var _obj:Object = {};	
-			_obj.newval = int(ind.GetText());
-			TweenMax.to(_obj, 3, {newval:playerChips,ease:Regular.easeOut,onUpdate:ind.Update(_obj.newval)});
+			_obj.newval = Number(ind.GetText());
+			TweenMax.to(_obj, 3, {newval:Number(playerChips),ease:Regular.easeOut,onUpdate:updateInd,onUpdateParams:[_obj.newval]});
+		}
+		
+		private function updateInd(val) {
+			trace(val);
+			ind.Update(val.toString());
 		}
 	
 		private function Toggle(anim:Array,instant:Boolean=false) {	//does all the animation
-			//ind.Update(playerChips.toString());
-			countUp();
+			ind.Update(playerChips.toString());
+			//countUp();
 			if (playerChips <= 0) {ind.Hide();}
 			
 			fadingChips = new TimelineLite();
