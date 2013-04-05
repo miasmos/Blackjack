@@ -115,11 +115,16 @@
 		private function loadFile(node:XML) {	//set up files for loading
 			var theurl:URLRequest = new URLRequest(node.@url);
 			var ldr;
+			var skipLoad:Boolean=false;
 			
 			switch (String(node.name())) {
 				case "sound":
 					ldr = new Sound();
 					sources[node.@name] = new AudioControl(node,ldr);
+					break;
+				case "video":
+					sources[node.@name] = new VideoControl(node);
+					skipLoad = true;
 					break;
 				default:
 					ldr = new Loader();
@@ -127,11 +132,13 @@
 					break;
 			}
 			
-			ldr.addEventListener(Event.COMPLETE,function(e:Event){loadFileDone(e,node.@name)});
-			ldr.addEventListener(IOErrorEvent.IO_ERROR,function(e:ErrorEvent){loadError(e,node.@name)});
-			ldr.addEventListener(SecurityErrorEvent.SECURITY_ERROR,function(e:ErrorEvent){loadError(e,node.@name)});
-			ldr.addEventListener(ProgressEvent.PROGRESS,function(e:ProgressEvent){onProgress(e,node.@name)});
-			ldr.load(theurl);
+			if (!skipLoad) {
+				ldr.addEventListener(Event.COMPLETE,function(e:Event){loadFileDone(e,node.@name)});
+				ldr.addEventListener(IOErrorEvent.IO_ERROR,function(e:ErrorEvent){loadError(e,node.@name)});
+				ldr.addEventListener(SecurityErrorEvent.SECURITY_ERROR,function(e:ErrorEvent){loadError(e,node.@name)});
+				ldr.addEventListener(ProgressEvent.PROGRESS,function(e:ProgressEvent){onProgress(e,node.@name)});
+				ldr.load(theurl);
+			}
 		}
 		
 		private function loadFileDone(e:Event,nodeName) {
