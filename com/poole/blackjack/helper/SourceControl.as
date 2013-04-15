@@ -37,11 +37,15 @@
 		}
 		
 		public function GetURL() {
-			return node.@url;
+			return String(node.@url);
 		}
 		
 		public function GetObject() {
 			return loader;
+		}
+		
+		public function SetObject(obj) {
+			loader = obj;
 		}
 	}
 	

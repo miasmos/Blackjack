@@ -26,7 +26,7 @@
 		}
 		
 		public function Stop() {
-			myChannel.stop()
+			myChannel.stop();
 			lastPos=0;
 			isPlay=false;
 			trace("stopped,muted:"+isMuted);

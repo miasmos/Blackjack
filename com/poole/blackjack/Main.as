@@ -34,7 +34,7 @@
 			addChild(container);
 			container.y=100;
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
-			changeState("menu");
+			changeState("intro");
 		}
 		
 		public function GetTouchRef() {
@@ -70,10 +70,11 @@
 			sources = arr;
 		}
 		
-		public function GetSource(name:String=null) {
-			if (name != null) {
-				if (sources[name] !== undefined) {
-					return sources[name];
+		public function GetSource(key:String=null) {
+			if (sources == null) {return null;}
+			if (key != null) {
+				if (key in sources) {
+					return sources[key];
 				}
 				else {
 					trace("key is not defined");

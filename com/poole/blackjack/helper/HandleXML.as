@@ -125,6 +125,7 @@
 				case "video":
 					sources[node.@name] = new VideoControl(node);
 					skipLoad = true;
+					sources[node.@name].SetLoaded(true);
 					break;
 				default:
 					ldr = new Loader();

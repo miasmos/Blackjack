@@ -16,8 +16,9 @@
     <winpercentage/>
   </guest>
   <sources>
-	<video name="test" url="embed/test.flv"/>
-    <image name="backer" url="embed/backer.png"/>
+    <video name="logo1" url="video/logo.mp4"/>
+    <video name="logo" url="video/logo.flv"/>
+    <image name="backer" url="images/backer.png"/>
     <sound name="music" url="audio/jazz.mp3"/>
     <sound name="roll" url="audio/roll.wav"/>
   </sources>
