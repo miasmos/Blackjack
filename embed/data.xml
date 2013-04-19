@@ -7,12 +7,12 @@
     <music>1</music>
   </settings>
   <guest>
-    <chips>1200</chips>
-    <chipswon>200</chipswon>
-    <chipslost>1500</chipslost>
-    <hands>13</hands>
-    <handswon>6</handswon>
-    <handslost>7</handslost>
+    <chips>210</chips>
+    <chipswon>0</chipswon>
+    <chipslost>0</chipslost>
+    <hands>0</hands>
+    <handswon>0</handswon>
+    <handslost>0</handslost>
     <winpercentage/>
   </guest>
   <sources>

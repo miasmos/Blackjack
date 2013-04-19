@@ -24,7 +24,7 @@
 		private var chipTimer;
 		private var cardSize=1;	//size of cards, multiplicative ex. 2 = double size
 		private var minBet=20;	//minimum bet to play a hand
-		private var startChips=20;	//number of chips player starts with
+		private var startChips=200;	//number of chips player starts with
 		private var splitArr:Array = new Array();
 		private var main;	//ref to main
 		
@@ -313,7 +313,7 @@
 		}
 		
 		public function ResetTimer() {
-			chipTimer.Reset();
+			if (chipTimer) {chipTimer.Reset();}
 		}
 		
 		private function enumHands() {
