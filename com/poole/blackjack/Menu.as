@@ -21,18 +21,29 @@
 			btnSettings.addEventListener(MouseEvent.CLICK, settingsClick);
 			btnSettings.addEventListener(MouseEvent.ROLL_OVER, over);
 			btnSettings.addEventListener(MouseEvent.ROLL_OUT, out);
+			btnSettings1.addEventListener(MouseEvent.CLICK, settingsClick);
+			btnSettings1.addEventListener(MouseEvent.ROLL_OVER, over);
+			btnSettings1.addEventListener(MouseEvent.ROLL_OUT, out);
 			
 			main=MovieClip(this.parent);
+			main.GetSource("music").Play();
+			main.GetSource("music").SetLoop();
+			if (int(main.GetSetting("settings","music")) == 0) {main.GetSource("music").Mute();}
 			TweenPlugin.activate([AutoAlphaPlugin]);
 			TweenLite.to(black,2,{autoAlpha:0});
+			trace(int(main.GetSetting("guest","chips")));
+			if (int(main.GetSetting("guest","chips")) >= 10) {btnPlay.textbox.text = "Continue";}
+			else {btnPlay.textbox.text = "New Game";}
 		}
 		
 		private function playClick(e:MouseEvent) {
+			main.GetSource("click").Play();
 			main.changeState("game");
 		}
 		
 		private function settingsClick(e:MouseEvent) {
-			main.changeState("settings");
+			main.GetSource("click").Play();
+			main.changeState("settings",false);
 		}
 		
 		private function over(e:MouseEvent) {

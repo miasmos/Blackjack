@@ -3,13 +3,14 @@
 	import flash.media.SoundChannel;
 	import flash.media.SoundTransform;
 	import com.poole.blackjack.helper.SourceControl;
+	import flash.events.Event;
 	
 	public class AudioControl extends SourceControl {
 		private var myChannel:SoundChannel = new SoundChannel();
 		private var lastPos:Number=0;
 		private var isPlay:Boolean=false;
 		private var isMuted:Boolean=false;
-		private var mySound;
+		private var mySound:Sound;
 		
 		public function AudioControl(nod,obj) {
 			super(nod,obj);
@@ -20,6 +21,7 @@
 			if (!isPlay) {
 				isPlay=true;
 				myChannel = mySound.play(lastPos);
+				myChannel.soundTransform = new SoundTransform(1);
 				if (isMuted) {myChannel.soundTransform = new SoundTransform(0);}
 				trace("playing,muted:"+isMuted);
 			}
@@ -44,6 +46,10 @@
 			else {Play();}
 		}
 		
+		public function SetLoop() {
+			addEventListener(Event.SOUND_COMPLETE,soundDone);
+		}
+		
 		public function Mute() {
 			if (isMuted) {myChannel.soundTransform = new SoundTransform(1);}
 			else {myChannel.soundTransform = new SoundTransform(0);}
@@ -59,5 +65,7 @@
 		public function IsMuted() {
 			return isMuted;
 		}
+		
+		private function soundDone(e:Event) {removeEventListener(Event.SOUND_COMPLETE,soundDone);Play();addEventListener(Event.SOUND_COMPLETE,soundDone);}
 	}
 }

@@ -2,7 +2,7 @@
 	import flash.display.*;
 	import flash.utils.*;
 	import flash.events.*;
-	import com.poole.blackjack.game.IndicatorLong;
+	import com.poole.blackjack.IndicatorLong;
 	import com.greensock.*;
 	import com.greensock.easing.*;
 	import fl.transitions.easing.*;
@@ -56,7 +56,7 @@
 		}
 		
 		public function YouAreAFailure() {
-			return playerChips < 20;
+			return playerChips < 10;
 		}
 		
 		public function ChipsLeft() {
@@ -64,11 +64,16 @@
 		}
 		
 		public function Disable() {
+			if (dragRef) {if (dragRef.IsMoving()) {releaseCursor(null);}}
 			chipsClickable = false;
+			TweenMax.to(this,1,{alpha:0.3});
+			TweenMax.to(ind,0.3,{alpha:0});
 		}
 		
 		public function Enable() {
 			chipsClickable = true;
+			TweenMax.to(ind,0.3,{alpha:1});
+			TweenMax.to(this,1,{alpha:1});
 		}
 		
 		public function ManualAdd(amt:uint) {
@@ -126,8 +131,13 @@
 			return temp;
 		}
 		
+		public function HasDrag() {
+			return dragRef.IsMoving();
+		}
+		
 		private function captureCursor(e:MouseEvent){	//spawn dragged chip and store refs to it and the origin chip
 			if (chipsClickable) {
+				game.playSound("chip",1,6);
 				originRef = chips[chips.indexOf(e.target.parent)];
 				dragRef = new Chip(originRef.GetVal(),false,1,originRef);
 				dragRef.x=this.x+originRef.x;
@@ -135,37 +145,41 @@
 				game.addChild(dragRef);
 				playerChips-=dragRef.GetVal();
 				dragRef.startDrag();
-				
+				dragRef.SetMoving(true);
 				ind.Update(playerChips.toString());
 				chipsClickable = false;
 				Toggle(getChipDisplay());
-				
 				dragRef.addEventListener(MouseEvent.MOUSE_UP,releaseCursor);
+				game.SaveStats();
 			}
 		}
 		
-		private function releaseCursor(e:MouseEvent){	//determine action based on chip position, chip back into pool or chip into pot
-			if (dragRef.y > game.uiZone.y-dragRef.height) {	//cancel use of chip
-				//ind.Update(playerChips.toString());
-				playerChips+=dragRef.GetVal();
-				fadingChips.reverse();	//timelinelite rocks
-				Toggle(getChipDisplay());
-				
-				TweenMax.to(dragRef,moveTime/2,{x:newXVal, y:this.y+originRef.y, onComplete:function() {
+		public function releaseCursor(e:MouseEvent){	//determine action based on chip position, chip back into pool or chip into pot
+			if (dragRef != null) {
+				if (dragRef.y > game.uiZone.y-dragRef.height) {	//cancel use of chip
+					//ind.Update(playerChips.toString());
+					playerChips+=dragRef.GetVal();
+					fadingChips.reverse();	//timelinelite rocks
+					Toggle(getChipDisplay());
+					dragRef.SetMoving(false);
+					TweenMax.to(dragRef,moveTime/2,{x:newXVal, y:this.y+originRef.y, onCompleteParams:[dragRef], onComplete:function(dragRef) {
+						dragRef.parent.removeChild(dragRef);
+						chipsClickable = true;
+					}});
+				}
+				else {	//add chip to pot
+					game.ResetTimer();
 					dragRef.parent.removeChild(dragRef);
+					pot.Add(dragRef);
+					//game.removeChild(dragRef);
 					chipsClickable = true;
-				}});
+				}
+				trace("Chips left: "+playerChips);
+				dragRef.stopDrag();
+				dragRef.removeEventListener(MouseEvent.MOUSE_UP,releaseCursor);
+				dragRef=null;
 			}
-			else {	//add chip to pot
-				game.ResetTimer();
-				dragRef.parent.removeChild(dragRef);
-				pot.Add(dragRef);
-				//game.removeChild(dragRef);
-				chipsClickable = true;
-			}
-			trace("Chips left: "+playerChips);
-			dragRef.stopDrag();
-			dragRef.removeEventListener(MouseEvent.MOUSE_UP,releaseCursor);
+			trace(pot.GetChips());
 		}
 		
 		private function countUp() {	//fancy easing for pot counter
@@ -183,7 +197,7 @@
 		private function Toggle(anim:Array,instant:Boolean=false) {	//does all the animation
 			ind.Update(playerChips.toString());
 			//countUp();
-			if (playerChips <= 0) {ind.Hide();}
+			if (playerChips < 10) {ind.Hide();}
 			
 			fadingChips = new TimelineLite();
 			movingChips = new TimelineLite();
@@ -243,7 +257,7 @@
 					movingChips.insert(new TweenMax(chips[anim[i]],moveTime,{x:chips[0].width*i,ease:Linear,roundProps:["x"]}));
 					
 					if (chips[anim[i]] == originRef) {
-						newXVal = (game.uiZone.width/2-anim.length*chips[0].width/2)+(chips[0].width*i);	//predict new xVal to return dragRef to originRef
+						newXVal = (game.uiZone.width/2-anim.length*chips[0].width/2)+(chips[0].width*(i));	//predict new xVal to return dragRef to originRef
 						
 						if (chips[anim[i]].visible == false) {
 							fadingChips.insert(new TweenMax(chips[anim[i]],0,{autoAlpha:1,delay:moveTime}));

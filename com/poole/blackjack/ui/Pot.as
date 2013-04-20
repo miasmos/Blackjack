@@ -1,7 +1,7 @@
 ﻿package com.poole.blackjack.ui {
 	import flash.display.MovieClip;
 	import com.poole.blackjack.ui.Chip;
-	import com.poole.blackjack.game.Indicator;
+	import com.poole.blackjack.Indicator;
 	import com.greensock.*;
 	import com.greensock.easing.*;
 	import com.greensock.plugins.*;
@@ -27,7 +27,7 @@
 		
 		public function Add(chip:Chip) {
 			if ((chips.length)*(chip.width/chipSpace)+chip.width*2 > game.gestureZone.width) {shiftChips();}
-			if (chips.length < 1) {this.y=game.gestureZone.height/2-chip.height/2; this.x=game.gestureZone.width/2-chip.width/2}	//set initial y
+			if (chips.length < 1) {this.y=game.gestureZone.height/2-50; this.x=game.gestureZone.width/2-chip.width/2}	//set initial y
 			chips.push(chip);
 			
 			chipVals[chip.GetVal()].push(chips.length-1);
@@ -124,7 +124,13 @@
 							y:chipUI.y+temp.y-this.y,
 							roundProps:["x","y"],
 							onComplete:function(chipRef) {
-								chipRef.parent.removeChild(chipRef);
+								TweenMax.to(chipRef,0.3,{
+									alpha:0,
+									onCompleteParams:[chipRef],
+									onComplete:function(chipRef) {
+										chipRef.parent.removeChild(chipRef);
+									}
+								});
 							},
 							onCompleteParams:[animate[key]]
 				});
@@ -144,7 +150,13 @@
 							y:this.y-stage.stageHeight,
 							roundProps:["x","y"],
 							onComplete:function(chipRef) {
-								chipRef.parent.removeChild(chipRef);
+								TweenMax.to(chipRef,0.3,{
+									alpha:0,
+									onCompleteParams:[chipRef],
+									onComplete:function(chipRef) {
+										chipRef.parent.removeChild(chipRef);
+									}
+								});
 							},
 							onCompleteParams:[animate1[key]]
 				});

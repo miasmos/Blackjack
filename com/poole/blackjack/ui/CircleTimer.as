@@ -108,7 +108,7 @@
 				__centerY + Math.sin(__angle)*__radius
 			);
 			
-			addEventListener(Event.ENTER_FRAME, onEnterFrameDraw);
+			if (!this.hasEventListener(Event.ENTER_FRAME)) {addEventListener(Event.ENTER_FRAME, onEnterFrameDraw);}
 			__lastFrameTime = getTimer();
 		}
 		

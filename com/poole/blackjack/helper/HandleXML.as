@@ -36,6 +36,7 @@
 		private var checkedOtherType:Boolean=false;
 		private var totalSize:uint = 0;
 		private var totalLoaded:Array = new Array();
+		private var sourceList;
 		
 		public function HandleXML(notif,url:String,enc:Boolean=true) {
 			encrypted = enc;
@@ -49,19 +50,13 @@
 			return xmlObject.data;
 		}
 		
-		public function SetXML(attr:String, val:String) {
-			switch (attr) {
-				case "music":
-					xmlObject.settings.music = val;
-					break;
-			}
+		public function SetXML(node:String, attr:String, val:String) {
+			xmlObject[node][attr]= val;
 		}
 		
-		public function GetXML(attr:String) {
-			switch (attr) {
-				case "music":
-					return xmlObject.settings.music;
-			}
+		public function GetXML(node:String,attr:String) {
+			trace(xmlObject.settings.attr);
+			return xmlObject[node][attr];
 		}
 		
 		public function Save(debug:Boolean=false) {
@@ -102,9 +97,8 @@
 			}
 			loader.close();
 			
-			/*check for sources to load*/
-			var sourceList = xmlObject.sources;
-			for each (var node:XML in sourceList.children()) {
+			sourceList = new Object();
+			for each (var node:XML in xmlObject.sources.children()) {
 				loadFile(node);
 			}
 			
@@ -154,7 +148,7 @@
 			var ref = sources[nodeName];
 			if (!ref.FirstCall()) {totalSize += e.bytesTotal; ref.SetFirstCall(true);}
 			totalLoaded[nodeName] = e.bytesLoaded;
-			notify.updateLoadBar(enumLoaded(),totalSize);
+			//notify.updateLoadBar(enumLoaded(),totalSize);
 			trace(new uint(enumLoaded()/totalSize*100).toString()+"%");
 		}
 		
@@ -214,6 +208,8 @@
 					<hands>0</hands>
 					<handswon>0</handswon>
 					<handslost>0</handslost>
+					<handstied>0</handstied>
+					<winpercentage>0</winpercentage>
 				  </guest>
 				</blackjack>;
 			return xml;

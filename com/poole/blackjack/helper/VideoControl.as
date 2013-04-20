@@ -56,6 +56,11 @@
 			playPause.x = (stage.stageWidth-totalWidth)/2; mute.x = (stage.stageWidth-totalWidth)/2+mute.width+5;
 		}
 		
+		public function DisableControls() {
+			playPause.visible = false;
+			mute.visible = false;
+		}
+		
 		public function Play() {
 			if (!isPlay) {
 				isPlay=true;

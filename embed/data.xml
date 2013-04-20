@@ -7,19 +7,32 @@
     <music>1</music>
   </settings>
   <guest>
-    <chips>210</chips>
-    <chipswon>0</chipswon>
-    <chipslost>0</chipslost>
-    <hands>0</hands>
-    <handswon>0</handswon>
-    <handslost>0</handslost>
-    <winpercentage/>
+    <chips>65</chips>
+    <chipswon>310</chipswon>
+    <chipslost>260</chipslost>
+    <hands>16</hands>
+    <handswon>3</handswon>
+    <handslost>12</handslost>
+    <handstied>1</handstied>
+    <winpercentage>20.0</winpercentage>
   </guest>
   <sources>
-    <video name="logo1" url="video/logo.mp4"/>
     <video name="logo" url="video/logo.flv"/>
-    <image name="backer" url="images/backer.png"/>
     <sound name="music" url="audio/jazz.mp3"/>
-    <sound name="roll" url="audio/roll.wav"/>
+    <sound name="click" url="audio/click.wav"/>
+    <sound name="chip1" url="audio/chipsHandle1.wav"/>
+    <sound name="chip2" url="audio/chipsHandle2.wav"/>
+    <sound name="chip3" url="audio/chipsHandle3.wav"/>
+    <sound name="chip4" url="audio/chipsHandle4.wav"/>
+    <sound name="chip5" url="audio/chipsHandle5.wav"/>
+    <sound name="chip6" url="audio/chipsHandle6.wav"/>
+    <sound name="chip7" url="audio/chipsHandle7.wav"/>
+    <sound name="card1" url="audio/cardSlide1.wav"/>
+    <sound name="card2" url="audio/cardSlide2.wav"/>
+    <sound name="card3" url="audio/cardSlide3.wav"/>
+    <sound name="card4" url="audio/cardSlide4.wav"/>
+    <sound name="card5" url="audio/cardSlide5.wav"/>
+    <sound name="card6" url="audio/cardSlide6.wav"/>
+    <sound name="shuffle" url="audio/cardFan1.wav"/>
   </sources>
 </blackjack>

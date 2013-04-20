@@ -28,7 +28,6 @@
 			TweenLite.to(black,2,{autoAlpha:1,delay:4,onComplete:function() {
 				main.changeState("menu"); 
 			}});*/
-			
 		}
 		
 		private function loadChk(e:Event) {
@@ -37,6 +36,7 @@
 					trace("video loaded lol");
 					removeEventListener(Event.ENTER_FRAME, loadChk);
 					video = main.GetSource("logo").GetThis();
+					video.DisableControls();
 					this.addChild(video);
 					video.Start(stage.stageWidth*0.7);
 					addEventListener(Event.ENTER_FRAME, doneChk);

@@ -43,6 +43,10 @@
 			return isMoving;
 		}
 		
+		public function SetMoving(e:Boolean) {
+			isMoving = e;
+		}
+		
 		public function AllowMove(a:Boolean) {
 			allowMove=a;
 		}

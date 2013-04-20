@@ -4,7 +4,9 @@
 	import com.poole.blackjack.helper.HandleXML;
 	import flash.events.Event;
 	import flash.utils.ByteArray;
-	import com.poole.blackjack.game.TouchEvents;
+	import com.poole.blackjack.TouchEvents;
+	import com.greensock.*;
+	import com.greensock.easing.*;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	
@@ -20,10 +22,8 @@
 		private var menu:MovieClip;
 		private var settings:MovieClip;
 		private var cState;	//state of app
-		//private var xmlLoader:HandleXML = new HandleXML(this,'embed/data.void');
 		private var xmlLoader:HandleXML = new HandleXML(this,'data',false);
 		private var xml:XML;
-		//private var loadBar:MovieClip = new Loading();
 		private var container:MovieClip = new MovieClip();
 		private var sources:Array;	//holds all imported files
 		private var touchRef = new TouchEvents(stage);
@@ -35,6 +35,7 @@
 			container.y=100;
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 			changeState("intro");
+			addEventListener(Event.CLOSE,Save);
 		}
 		
 		public function GetTouchRef() {
@@ -48,12 +49,25 @@
 		public function XMLDone(xm) {
 			xml = xm;
 			trace(xml);
-			xmlLoader.SetXML("music", "1");
-			xmlLoader.Save(true);
+			//xmlLoader.SetXML("music", "1");
+			xmlLoader.Save();
 			//menu.leaderboard.leaderName.text = "Name: "+xml.leaderboard.entry.@name;
 			//menu.leaderboard.leaderScore.text = "Score: "+xml.leaderboard.score;
 			//menu.leaderboard.leaderPlace.text = "Place: "+xml.leaderboard.entry.@place;
 			//trace("Name: "+xml.leaderboard.entry.@name+", Score: "+xml.leaderboard.score+", Place:"+xml.leaderboard.entry.@place);
+		}
+		
+		public function Save(e:Event) {
+			xmlLoader.Save(true);
+		}
+		
+		public function EditSetting(thenode,thename,thevalue,save:Boolean=false) {
+			xmlLoader.SetXML(thenode,thename,thevalue);
+			if (save) {xmlLoader.Save();}
+		}
+		
+		public function GetSetting(thenode,thename) {
+			return xmlLoader.GetXML(thenode,thename);
 		}
 		
 		public function fileLoaded(file) {
@@ -62,7 +76,7 @@
 			if (xmlLoader.AllFilesLoaded()) {
 				//removeChild(loadBar);
 				trace("all files have finished loading");
-				trace(GetSource("backer").GetURL());
+				xmlLoader.Save(true);
 			}
 		}
 		
@@ -86,6 +100,16 @@
 			}
 		}
 		
+		public function GetRandomSound(key:String,minNum:int,maxNum:int) {
+			key=key+Math.floor(Math.random() * (maxNum - minNum + 1) + minNum);
+			trace(key+" "+sources[key]);
+			if (key != null) {
+				if (key in sources) {
+					return sources[key];
+				}
+			}
+		}
+		
 		public function GetXML() {
 			return xml;
 		}
@@ -103,24 +127,33 @@
 			removeChild(object);
 		}
 		
-		public function changeState(stat:String) {
-			if (cState) {removeChild(cState);}
+		public function changeState(stat:String,remove:Boolean=true) {
+			if (cState && remove) {removeChild(cState);}
 			switch(stat) {
 				case "intro":
 					intro = new Intro();
+					addChild(this[stat]);
 					break;
 				case "menu":
 					menu = new Menu();
+					addChild(this[stat]);
 					break;
 				case "game":
 					game = new Game(this);
+					addChild(this[stat]);
+					this[stat].alpha=0;
+					TweenMax.to(this[stat],1,{alpha:1});
 					break;
 				case "settings":
 					settings = new Settings(this);
+					addChild(this[stat]);
+					this[stat].alpha=0;
+					TweenMax.to(this[stat],1,{alpha:1});
 					break;
 			}
-			cState = this[stat];
-			addChild(cState);
+			if (remove) {
+				cState = this[stat];
+			}
 		}
 	}
 }
