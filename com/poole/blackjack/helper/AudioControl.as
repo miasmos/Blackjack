@@ -11,16 +11,19 @@
 		private var isPlay:Boolean=false;
 		private var isMuted:Boolean=false;
 		private var mySound:Sound;
+		private var loop:Boolean=false;
 		
-		public function AudioControl(nod,obj) {
+		public function AudioControl(nod,obj,lop=false) {
 			super(nod,obj);
 			mySound=obj;
+			loop=lop;
 		}
 		
 		public function Play() {
 			if (!isPlay) {
 				isPlay=true;
-				myChannel = mySound.play(lastPos);
+				if (loop) {myChannel = mySound.play(lastPos,9999);}
+				else {myChannel = mySound.play(lastPos);}
 				myChannel.soundTransform = new SoundTransform(1);
 				if (isMuted) {myChannel.soundTransform = new SoundTransform(0);}
 				trace("playing,muted:"+isMuted);

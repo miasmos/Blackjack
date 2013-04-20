@@ -114,7 +114,7 @@
 			switch (String(node.name())) {
 				case "sound":
 					ldr = new Sound();
-					sources[node.@name] = new AudioControl(node,ldr);
+					sources[node.@name] = new AudioControl(node,ldr,node.@name=="music");
 					break;
 				case "video":
 					sources[node.@name] = new VideoControl(node);

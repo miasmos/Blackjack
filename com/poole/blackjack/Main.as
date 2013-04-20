@@ -10,11 +10,7 @@
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	
-	//click the gear in the top right for audio things
-	//switches states to settings state
-	//HandleXML imports all nodes with the 'embed' tag and stores them in an array in main for reference
-	//Audio files are initialized with the AudioControl class. This handles all playing/stopping etc related to audio
-	//AudioControl is initialized as an extension of SourceControl. This is a generic class with the functions every source should have
+	//I pinpointed the crashes to the point where I've finshed loading an asset and start loading another, though could not figure why it was crashing without error
 	
 	public class Main extends MovieClip {
 		private var game:MovieClip;	//pass stage ref

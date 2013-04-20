@@ -27,7 +27,6 @@
 			
 			main=MovieClip(this.parent);
 			main.GetSource("music").Play();
-			main.GetSource("music").SetLoop();
 			if (int(main.GetSetting("settings","music")) == 0) {main.GetSource("music").Mute();}
 			TweenPlugin.activate([AutoAlphaPlugin]);
 			TweenLite.to(black,2,{autoAlpha:0});
