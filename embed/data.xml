@@ -7,14 +7,16 @@
     <music>1</music>
   </settings>
   <guest>
-    <chips>65</chips>
-    <chipswon>310</chipswon>
-    <chipslost>260</chipslost>
-    <hands>16</hands>
-    <handswon>3</handswon>
-    <handslost>12</handslost>
-    <handstied>1</handstied>
-    <winpercentage>20.0</winpercentage>
+    <score>0</score>
+    <gameslost>0</gameslost>
+    <chips>0</chips>
+    <chipswon>2190</chipswon>
+    <chipslost>1895</chipslost>
+    <hands>68</hands>
+    <handswon>25</handswon>
+    <handslost>38</handslost>
+    <handstied>5</handstied>
+    <winpercentage>37.3</winpercentage>
   </guest>
   <sources>
     <video name="logo" url="video/logo.flv"/>
